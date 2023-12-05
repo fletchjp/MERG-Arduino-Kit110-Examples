@@ -242,11 +242,11 @@ public:
           // It also seems as though setting the cursor
           // is relative to the last position, which is not what I thought
           // happened before. This works, redrawing the whole display.
-          lcd.begin(16, 2);
-          lcd.setCursor(0,0);
-          lcd.print("CANshield LCDBut");
-          lcd.setCursor(0,1);
-          lcd.print("Press Key:");
+          //lcd.begin(16, 2);
+          //lcd.setCursor(0,0);
+          //lcd.print("CANshield LCDBut");
+          //lcd.setCursor(0,1);
+          //lcd.print("Press Key:");
           //lcd.home();
           lcd.setCursor(10,1);
           lcd.print(key);
@@ -344,29 +344,29 @@ void setupCBUS() {
   CBUS.setName(mname);
 
   // set CBUS LED pins and assign to CBUS
-  ledGrn.setPin(LED_GRN);
-  ledYlw.setPin(LED_YLW);
-  CBUS.setLEDs(ledGrn, ledYlw); 
+  //ledGrn.setPin(LED_GRN);
+  //ledYlw.setPin(LED_YLW);
+  //CBUS.setLEDs(ledGrn, ledYlw); 
 
   // initialise CBUS switch and assign to CBUS
-  pb_switch.setPin(SWITCH0, LOW);
-  pb_switch.run();
-  CBUS.setSwitch(pb_switch);
+  //pb_switch.setPin(SWITCH0, LOW);
+  //pb_switch.run();
+  //CBUS.setSwitch(pb_switch);
 
   // module reset - if switch is depressed at startup and module is in SLiM mode
-  if (pb_switch.isPressed() && !modconfig.FLiM) {
-    Serial << F("> switch was pressed at startup in SLiM mode") << endl;
-    modconfig.resetModule(ledGrn, ledYlw, pb_switch);
-  }
+  //if (pb_switch.isPressed() && !modconfig.FLiM) {
+  //  Serial << F("> switch was pressed at startup in SLiM mode") << endl;
+  //  modconfig.resetModule(ledGrn, ledYlw, pb_switch);
+  //}
 
   // register our CBUS event handler, to receive event messages of learned events
   CBUS.setEventHandler(eventhandler);
 
   // set CBUS LEDs to indicate the current mode
-  CBUS.indicateMode(modconfig.FLiM);
+  //CBUS.indicateMode(modconfig.FLiM);
 
   // configure and start CAN bus and CBUS message processing
-  CBUS.setNumBuffers(2, 1);      // more buffers = more memory used, fewer = less
+  CBUS.setNumBuffers(2, 2);      // more buffers = more memory used, fewer = less
   CBUS.setOscFreq(CAN_OSC_FREQ);   // select the crystal frequency of the CAN module
   CBUS.setPins(CAN_CS_PIN, CAN_INT_PIN);   // select pins for CAN bus CE and interrupt connections
 
@@ -477,6 +477,7 @@ void setup() {
   // put your setup code here, to run once:
 
   // Initialise
+  while(!Serial);
   Serial.begin(SERIAL_SPEED);             // Start Serial IO.
   Serial << endl << endl << F("> ** CBUS LCD Button Arduino Shield ** ") << __FILE__ << endl;
   //analogWrite(pin_d6,50);
