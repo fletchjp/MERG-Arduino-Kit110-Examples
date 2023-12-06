@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // Pin Use map UNO:
 // Digital pin 2          Interupt CAN
-// Digital pin 3 (PWM)    LED 0
+// Digital pin 3 (PWM)    Not used
 // Digital pin 4          LCD pin_d4
 // Digital pin 5 (PWM)    LCD pin_d5
 // Digital pin 6 (PWM)    LCD pin_d6
@@ -26,8 +26,8 @@
 
 // Digital pin 14 / Analog pin 0  Analog input from buttons
 // Digital pin 15 / Analog pin 1 (SS)    CS    CAN    
-// Digital pin 16 / Analog pin 2     Switch 0
-// Digital pin 17 / Analog pin 3     Bell/buzzer use.
+// Digital pin 16 / Analog pin 2  Not used
+// Digital pin 17 / Analog pin 3  Not used
 // Digital / Analog pin 4     Not Used - reserved for I2C
 // Digital / Analog pin 5     Not Used - reserved for I2C
 //////////////////////////////////////////////////////////////////////////
@@ -75,23 +75,8 @@ const byte MODULE_ID = 81;      // CBUS module type for CANshield
 
 const unsigned long CAN_OSC_FREQ = 16000000UL;     // Oscillator frequency on the CAN2515 board
 
-#ifdef HAS_SWITCHES
-// Conditional for switches.
-#define NUM_LEDS 1              // How many LEDs are there?
-#define NUM_SWITCHES 1          // How many switchs are there?
-
-///Module pins available for use are Pins 3 and A2 - A5
-const byte LED[NUM_LEDS] = {3};            // LED pin connections through typ. 1K8 resistor
-const byte SWITCH[NUM_SWITCHES] = {16};     // Module Switch takes input to 0V.
-
-/// module objects
-Bounce moduleSwitch[NUM_SWITCHES];  //  switch as input
-LEDControl moduleLED[NUM_LEDS];     //  LED as output
-byte switchState[NUM_SWITCHES];
-#else
 #define NUM_LEDS 0            // How many LEDs are there?
 #define NUM_SWITCHES 0          // How many switchs are there?
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -391,32 +376,6 @@ public:
 
 MyKeyListener selectKeyListener("SELECT");
 
-#ifdef HAS_SWITCHES
-void runLEDs(){
-  // Run the LED code
-  for (int i = 0; i < NUM_LEDS; i++) {
-    moduleLED[i].run();
-  }
-}
-
-void setupModule()
-{
-   // configure the module switches, active low
-  for (int i = 0; i < NUM_SWITCHES; i++)
-  {
-    moduleSwitch[i].attach(SWITCH[i], INPUT_PULLUP);
-    moduleSwitch[i].interval(5);
-    switchState[i] = false;
-  }
-
-  // configure the module LEDs
-  for (int i = 0; i < NUM_LEDS; i++) {
-    moduleLED[i].setPin(LED[i]);
-  } 
-}
-
-#endif
-
 void setup1602() {
  lcd.begin(16, 2);
  lcd.setCursor(0,0);
@@ -452,16 +411,9 @@ void setup() {
   //analogWrite(pin_d6,50);
   setup1602();
   setupCBUS();
-#ifdef HAS_SWITCHES
-  setupModule();
-#endif
   setupSwitches();
 
   // Schedule tasks to run every 250 milliseconds.
-#ifdef HAS_SWITCHES
-  taskManager.scheduleFixedRate(250, runLEDs);
-  taskManager.scheduleFixedRate(250, processSwitches);
-#endif
   taskManager.scheduleFixedRate(250, processSerialInput);
   taskManager.scheduleFixedRate(250, processButtons);
 
@@ -577,79 +529,6 @@ bool sendEvent(byte opCode, unsigned int eventNo)
   }
   return success;
 }
-
-#ifdef HAS_SWITCHES
-void processSwitches(void)
-{
-  bool is_success = true;
-  for (int i = 0; i < NUM_SWITCHES; i++)
-  {
-    moduleSwitch[i].update();
-    if (moduleSwitch[i].changed())
-    {
-     byte nv = i + 1;
-     byte nvval = modconfig.readNV(nv);
-
-     byte opCode;
-
-     //DEBUG_PRINT(F("> Button ") << i << F(" state change detected"));
-     Serial << F (" NV = ") << nv << F(" NV Value = ") << nvval;
-
-     switch (nvval)
-     {
-      case 0:
-        opCode = (moduleSwitch[i].fell() ? OPC_ACON : OPC_ACOF);
-  
-        //DEBUG_PRINT(F("> Button ") << i
-        //    << (moduleSwitch[i].fell() ? F(" pressed, send 0x") : F(" released, send 0x")) << _HEX(opCode));
-        is_success = sendEvent(opCode, (i + 1));
-        break;
-
-      case 1:
-          if (moduleSwitch[i].fell())
-          {
-            opCode = OPC_ACON;
-          //  DEBUG_PRINT(F("> Button ") << i << F(" pressed, send 0x") << _HEX(OPC_ACON));
-            is_success = sendEvent(opCode, (i + 1));
-          }
-          break;
-
-      case 2:
-
-
-          if (moduleSwitch[i].fell())
-          {
-            opCode = OPC_ACOF;
-            //DEBUG_PRINT(F("> Button ") << i << F(" pressed, send 0x") << _HEX(OPC_ACOF));
-            is_success = sendEvent(opCode, (i + 1));
-          }
-          break;
-
-      case 3:
-
-          if (moduleSwitch[i].fell())
-          {
-            switchState[i] = !switchState[i];
-            opCode = (switchState[i] ? OPC_ACON : OPC_ACOF);
-            //DEBUG_PRINT(F("> Button ") << i
-            //    << (moduleSwitch[i].fell() ? F(" pressed, send 0x") : F(" released, send 0x")) << _HEX(opCode));
-            is_success = sendEvent(opCode, (i + 1));
-          }
-
-        break;
-		
-		default:
-        //DEBUG_PRINT(F("> Invalid NV value."));
-        break;
-     }
-    }
-  } 
-  /*if (!is_success) 
-  {
-    DEBUG_PRINT(F("> One of the send message events failed"));
-  }*/
-}
-#endif
 
 //
 /// command interpreter for serial console input
