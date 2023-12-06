@@ -19,7 +19,7 @@
 // Digital pin 7          LCD pin_d7
 // Digital pin 8          LCD pin_RS
 // Digital pin 9 (PWM)    LCD pin_EN
-// Digital pin 10         LCD backlight pin
+// Digital pin 10         LCD backlight pin - this would normally be for the CS
 // Digital pin 11 (MOSI)  SI    CAN
 // Digital pin 12 (MISO)  SO    CAN
 // Digital pin 13 (SCK)   Sck   CAN
