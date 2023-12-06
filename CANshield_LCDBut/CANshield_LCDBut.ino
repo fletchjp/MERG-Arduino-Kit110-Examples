@@ -59,10 +59,6 @@ IoAbstractionRef dfRobotKeys = inputFromDfRobotShield();
 #include <cbusdefs.h>            // MERG CBUS constants
 #include <CBUSParams.h>          // CBUS parameters
 
-#ifdef HAS_SWITCHES
-#include "LEDControl.h"          // CBUS LEDs
-#endif
-
 ////////////DEFINE MODULE/////////////////////////////////////////////////
 /// Use these values for the CBUS outputs from the display shield buttons
 int button = -1;
