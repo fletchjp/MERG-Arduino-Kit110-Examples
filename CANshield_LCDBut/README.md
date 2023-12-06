@@ -10,6 +10,14 @@ This examples is fairly complex code as it has to support both the reading of th
 
 https://www.dfrobot.com/product-51.html (DFR0009)
 
+There are some libraries which are used to control the display. They are all available in the Arduino IDE.
+
+ - IoAbstraction   https://www.thecoderscorner.com/products/arduino-libraries/io-abstraction/
+ - TaskManagerIO   https://www.thecoderscorner.com/products/arduino-libraries/taskmanager-io/
+ - LiquidCrystalIO https://www.thecoderscorner.com/products/arduino-libraries/liquidcrystal-io/
+
+These are all from the same source and work together well. They provide a way of handling the display, buttons and task management.
+
 ## Please note
 
 The CANshield button and LEDs not available for CBUS configuration
