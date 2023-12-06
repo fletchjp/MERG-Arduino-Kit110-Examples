@@ -59,7 +59,9 @@ IoAbstractionRef dfRobotKeys = inputFromDfRobotShield();
 #include <cbusdefs.h>            // MERG CBUS constants
 #include <CBUSParams.h>          // CBUS parameters
 
+#ifdef HAS_SWITCHES
 #include "LEDControl.h"          // CBUS LEDs
+#endif
 
 ////////////DEFINE MODULE/////////////////////////////////////////////////
 /// Use these values for the CBUS outputs
@@ -77,6 +79,8 @@ const byte MODULE_ID = 81;      // CBUS module type for CANshield
 
 const unsigned long CAN_OSC_FREQ = 16000000UL;     // Oscillator frequency on the CAN2515 board
 
+#ifdef HAS_SWITCHES
+// Conditional for switches.
 #define NUM_LEDS 1              // How many LEDs are there?
 #define NUM_SWITCHES 1          // How many switchs are there?
 
@@ -88,6 +92,10 @@ const byte SWITCH[NUM_SWITCHES] = {16};     // Module Switch takes input to 0V.
 Bounce moduleSwitch[NUM_SWITCHES];  //  switch as input
 LEDControl moduleLED[NUM_LEDS];     //  LED as output
 byte switchState[NUM_SWITCHES];
+#else
+#define NUM_LEDS 0            // How many LEDs are there?
+#define NUM_SWITCHES 0          // How many switchs are there?
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -387,6 +395,7 @@ public:
 
 MyKeyListener selectKeyListener("SELECT");
 
+#ifdef HAS_SWITCHES
 void runLEDs(){
   // Run the LED code
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -409,6 +418,8 @@ void setupModule()
     moduleLED[i].setPin(LED[i]);
   } 
 }
+
+#endif
 
 void setup1602() {
  lcd.begin(16, 2);
@@ -445,12 +456,16 @@ void setup() {
   //analogWrite(pin_d6,50);
   setup1602();
   setupCBUS();
+#ifdef HAS_SWITCHES
   setupModule();
+#endif
   setupSwitches();
 
   // Schedule tasks to run every 250 milliseconds.
+#ifdef HAS_SWITCHES
   taskManager.scheduleFixedRate(250, runLEDs);
   taskManager.scheduleFixedRate(250, processSwitches);
+#endif
   taskManager.scheduleFixedRate(250, processSerialInput);
   taskManager.scheduleFixedRate(250, processButtons);
 
@@ -567,6 +582,7 @@ bool sendEvent(byte opCode, unsigned int eventNo)
   return success;
 }
 
+#ifdef HAS_SWITCHES
 void processSwitches(void)
 {
   bool is_success = true;
@@ -637,6 +653,7 @@ void processSwitches(void)
     DEBUG_PRINT(F("> One of the send message events failed"));
   }*/
 }
+#endif
 
 //
 /// command interpreter for serial console input
