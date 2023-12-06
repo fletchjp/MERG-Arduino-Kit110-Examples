@@ -5,7 +5,10 @@
 // LCDshieldButtonsSerialDFRobot.ino 
 // LCD shield with buttons example code
 // Adapted to run with CBUS
-
+//////////////////////////////////////////////////////////////////////////////////
+// NOTE: This code does not support the Button and LEDs for CBUS configuration.
+//       This is because the display uses the same pins.
+//       In any case, the button and LEDs are hidden behind the display shield.
 ///////////////////////////////////////////////////////////////////////////////////
 // Pin Use map UNO:
 // Digital pin 2          Interupt CAN
@@ -71,10 +74,6 @@ const byte VER_MAJ = 2;         // code major version
 const char VER_MIN = 'a';       // code minor version
 const byte VER_BETA = 1;        // code beta sub-version
 const byte MODULE_ID = 81;      // CBUS module type for CANshield
-
-const byte LED_GRN = 4;             // CBUS green SLiM LED pin
-const byte LED_YLW = 7;             // CBUS yellow FLiM LED pin
-const byte SWITCH0 = 8;             // CBUS push button switch pin
 
 const unsigned long CAN_OSC_FREQ = 16000000UL;     // Oscillator frequency on the CAN2515 board
 
@@ -237,17 +236,6 @@ public:
 
         if (hasKey) {
           hasKey = false;
-          // For some reason I have to redraw the whole display.
-          // If I do not then there is a corrupt output.
-          // It also seems as though setting the cursor
-          // is relative to the last position, which is not what I thought
-          // happened before. This works, redrawing the whole display.
-          //lcd.begin(16, 2);
-          //lcd.setCursor(0,0);
-          //lcd.print("CANshield LCDBut");
-          //lcd.setCursor(0,1);
-          //lcd.print("Press Key:");
-          //lcd.home();
           lcd.setCursor(10,1);
           lcd.print(key);
         }
@@ -343,27 +331,8 @@ void setupCBUS() {
   CBUS.setParams(params.getParams());
   CBUS.setName(mname);
 
-  // set CBUS LED pins and assign to CBUS
-  //ledGrn.setPin(LED_GRN);
-  //ledYlw.setPin(LED_YLW);
-  //CBUS.setLEDs(ledGrn, ledYlw); 
-
-  // initialise CBUS switch and assign to CBUS
-  //pb_switch.setPin(SWITCH0, LOW);
-  //pb_switch.run();
-  //CBUS.setSwitch(pb_switch);
-
-  // module reset - if switch is depressed at startup and module is in SLiM mode
-  //if (pb_switch.isPressed() && !modconfig.FLiM) {
-  //  Serial << F("> switch was pressed at startup in SLiM mode") << endl;
-  //  modconfig.resetModule(ledGrn, ledYlw, pb_switch);
-  //}
-
   // register our CBUS event handler, to receive event messages of learned events
   CBUS.setEventHandler(eventhandler);
-
-  // set CBUS LEDs to indicate the current mode
-  //CBUS.indicateMode(modconfig.FLiM);
 
   // configure and start CAN bus and CBUS message processing
   CBUS.setNumBuffers(2, 2);      // more buffers = more memory used, fewer = less
@@ -380,13 +349,6 @@ void logKeyPressed(int pin,const char* whichKey, bool heldDown) {
     drawingEvent.drawKey(whichKey);
     Serial.print("Key ");
     Serial.print(whichKey);
-    //lcd.begin(16, 2);
-    //lcd.setCursor(0,0);
-    //lcd.print("CANshield LCDBut");
-    //lcd.setCursor(0,1);
-    //lcd.print("Press Key:");
-    //lcd.setCursor(10,1);
-    //lcd.print (whichKey);
     Serial.println(heldDown ? " Held" : " Pressed");
     button = pin;
 }
@@ -577,7 +539,7 @@ void processButtons(void)
    // Send an event corresponding to the button, add NUM_SWITCHES to avoid switch events.
    byte opCode;
    if (button != prevbutton) {
-      //DEBUG_PRINT(F("Button ") << button << F(" changed")); 
+      Serial << F("Button ") << button << F(" changed") << endl; 
       opCode = OPC_ACON;
       sendEvent(opCode, button + NUM_SWITCHES);
       prevbutton = button;
@@ -597,11 +559,11 @@ bool sendEvent(byte opCode, unsigned int eventNo)
   msg.data[4] = lowByte(eventNo);
 
   bool success = CBUS.sendMessage(&msg);
-  /*if (success) {
-    DEBUG_PRINT(F("> sent CBUS message with Event Number ") << eventNo);
+  if (success) {
+    Serial << F("> sent CBUS message with Event Number ") << eventNo << endl;
   } else {
-    DEBUG_PRINT(F("> error sending CBUS message"));
-  }*/
+    Serial << F("> error sending CBUS message with ")  << eventNo << endl;
+  }
   return success;
 }
 
