@@ -54,7 +54,7 @@ IoAbstractionRef dfRobotKeys = inputFromDfRobotShield();
 // CBUS library header files
 #include <CBUS2515.h>            // CAN controller and CBUS class
 #include <CBUSconfig.h>          // module configuration
-#include <CBUSLED.h>             // CBUS LEDs
+//#include <CBUSLED.h>             // CBUS LEDs
 #include <CBUSconfig.h>          // module configuration
 #include <cbusdefs.h>            // MERG CBUS constants
 #include <CBUSParams.h>          // CBUS parameters
@@ -64,7 +64,7 @@ IoAbstractionRef dfRobotKeys = inputFromDfRobotShield();
 #endif
 
 ////////////DEFINE MODULE/////////////////////////////////////////////////
-/// Use these values for the CBUS outputs
+/// Use these values for the CBUS outputs from the display shield buttons
 int button = -1;
 int prevbutton = -1;
 
