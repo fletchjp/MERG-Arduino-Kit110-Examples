@@ -18,13 +18,12 @@ This is because the pins for the LEDs and buttons are also used by the display, 
 
 All use of the button and LEDs has to be removed in the code as otherwise the display does not function correctly.
 
-## CANshield information
+## More information
 
-An Arduino program for the testing of the Arduino CAN Shield (MERG Kit Locker #110).
+An Arduino program using the Arduino CAN Shield (MERG Kit Locker #110).
 Information about the kit can be found at https://www.merg.org.uk/merg_wiki/doku.php?id=kits:110
 
-The kit can be built either with an Arduino NANO mounted onto it , or as a shield to fit onto an Arduino UNO or MEGA.
-Note that for a MEGA some pin allocations are different.
+The for this application it has to be built as a shield to fit onto an Arduino UNO.
 
 This sketch provides the code which will enable users of the Arduino CAN Shield to test functionality of the shield.
 Sketch is the Arduino name for the program code which is run on an Arduino.
@@ -32,17 +31,12 @@ Sketch is the Arduino name for the program code which is run on an Arduino.
 Key Features:
 - MERG CBUS interface.
 - This can be configured to a CBUS network using the FLiM Configuration Utility (FCU) which only runs on Windows computers.
-- This can be done EITHER using the push button on the shield OR the Serial Monitor as described below.
+- This can be done using the Serial Monitor as described below.
+- The puish button method is not available for this code.
 
 ## Overview
 
 The program is written in C++ but you do not need to understand this to use the program.
-
-### Release history
-
-  * GitHub Release 1.0.0  FCU Version 1b first GitHub release
-  * GitHub Release 1.1.0  FCU Version 1c add README file
-  * GitHub Release 1.1.1  FCU Version 1d Edit of README file including release history.
 
 ## Loading the code and libraries
 
@@ -86,11 +80,7 @@ Digital pin 13| (SCK)   Sck   CAN
 
 Using the CAN Shield, the following pins are used for CBUS Initialisation:
 
-Pin | Description
---- | ---
-Digital pin 4 | CBUS Green LED
-Digital pin 7 | CBUS Yellow LED
-Digital pin 8 | CBUS Switch
+NOTE: For this application the pin 10 is taken by the display shield and CS has to be made 15 instead.
 
 **It is the users responsibility that the total current that the Arduino is asked to supply 
 stays within the capacity of the on board regulator.  Failure to do this will result in 
@@ -105,7 +95,7 @@ anode.  The LED cathode should be connected to ground.
 
 ### Library Dependencies
 
-The following third party libraries are required:
+The following third party libraries are required for the basic CANshield code:
 
 Library | Purpose
 ---------------|-----------------
