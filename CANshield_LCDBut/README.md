@@ -10,6 +10,14 @@ This examples is fairly complex code as it has to support both the reading of th
 
 https://www.dfrobot.com/product-51.html (DFR0009)
 
+## Please note
+
+The CANshield button and LEDs not available for CBUS configuration
+
+This is because the pins for the LEDs and buttons are also used by the display, quite apart from them being hidden behind the display.
+
+All use of the button and LEDs has to be removed in the code as otherwise the display does not function correctly.
+
 ## CANshield information
 
 An Arduino program for the testing of the Arduino CAN Shield (MERG Kit Locker #110).
