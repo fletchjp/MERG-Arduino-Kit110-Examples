@@ -26,6 +26,18 @@ This is because the pins for the LEDs and buttons are also used by the display, 
 
 All use of the button and LEDs has to be removed in the code as otherwise the display does not function correctly.
 
+## Outgoing events
+
+The example can send CBUS events from the buttons as follows. The numbers are the CBUS event numbers. These can be taught using FCU.
+
+ - 1 RIGHT
+ - 2 LEFT
+ - 3 UP
+ - 4 DOWN
+ - 5 SELECT
+ 
+  The RST button resets the Arduino.
+
 ## More information
 
 An Arduino program using the Arduino CAN Shield (MERG Kit Locker #110).
