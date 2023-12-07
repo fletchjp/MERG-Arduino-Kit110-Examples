@@ -76,7 +76,10 @@ const byte MODULE_ID = 99;      // CBUS module type for CANshield
 const unsigned long CAN_OSC_FREQ = 16000000UL;     // Oscillator frequency on the CAN2515 board
 
 #define NUM_LEDS 0            // How many LEDs are there?
-#define NUM_SWITCHES 0          // How many switchs are there?
+#define NUM_SWITCHES 0        // How many switchs are there?
+#define NUM_NVS 10            // Moved here so that an array can be made.
+
+byte buttonState[NUM_NVS];
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -294,7 +297,7 @@ void setupCBUS() {
 
   // set config layout parameters
   modconfig.EE_NVS_START = 10;
-  modconfig.EE_NUM_NVS = 10;
+  modconfig.EE_NUM_NVS = NUM_NVS;
   modconfig.EE_EVENTS_START = 50;
   modconfig.EE_MAX_EVENTS = 32;
   modconfig.EE_NUM_EVS = 1;
@@ -333,6 +336,13 @@ void setupCBUS() {
   }
 }
 
+void setupModule()
+{
+  for (int i = 0; i < NUM_NVS; i++)
+  {
+    buttonState[i] = false;
+  }
+}
 
 void logKeyPressed(int pin,const char* whichKey, bool heldDown) {
     drawingEvent.drawKey(whichKey);
@@ -411,6 +421,7 @@ void setup() {
   //analogWrite(pin_d6,50);
   setup1602();
   setupCBUS();
+  setupModule();
   setupSwitches();
 
   // Schedule tasks to run every 250 milliseconds.
@@ -505,12 +516,34 @@ void printConfig(void) {
 
 void processButtons(void)
 {
-   // Send an event corresponding to the button, add NUM_SWITCHES to avoid switch events.
+   // Send an event corresponding to the button.
+   // Note: There could be a use of NVs to change the action depending on the setting.
+   byte nvval; 
    byte opCode;
-   if (button != prevbutton) {
-      Serial << F("Button ") << button << F(" changed") << endl; 
-      opCode = OPC_ACON;
-      sendEvent(opCode, button + NUM_SWITCHES);
+   nvval = modconfig.readNV(button);
+   // Allow consecutive button pushes for NV = 2 (on/off case)
+   if (button != prevbutton /*|| nvval == 2 */) {
+      Serial << F("Button ") << button << F(" changed") << endl;
+      switch (nvval)
+      {
+        case 0: // ON
+          opCode = OPC_ACON;
+          break;
+        case 1: // OFF
+          opCode = OPC_ACOF;
+          break;
+        case 2: // ON/OFF
+          if (buttonState[button]) {
+            opCode = OPC_ACOF;
+          } else {
+            opCode = OPC_ACON;
+          }
+          buttonState[button] = !buttonState[button];
+          break;
+        default:
+          opCode = OPC_ACON;
+      }
+      sendEvent(opCode, button);
       prevbutton = button;
    }
 }
