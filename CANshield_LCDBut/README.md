@@ -6,6 +6,8 @@ This is an example of an application of the Arduino CAN Shield (MERG Kit Locker 
 
 The example code runs on an Arduino UNO with a CAN shield and a DFRobot shield with a 2 by 16 LCD display and buttons.
 
+The example program contains code to send CBUS events when the buttons on the shield are pressed. Details are given below (see Outgoing events).
+
 This examples is fairly complex code as it has to support both the reading of the input buttons and the send information to the LCD display. 
 
 https://www.dfrobot.com/product-51.html (DFR0009)
@@ -20,11 +22,11 @@ These are all from the same source and work together well. They provide a way of
 
 ## Please note
 
-The CANshield button and LEDs not available for CBUS configuration
+The CANshield button and LEDs not available for CBUS configuration in this code.
 
 This is because the pins for the LEDs and buttons are also used by the display, quite apart from them being hidden behind the display.
 
-All use of the button and LEDs has to be removed in the code as otherwise the display does not function correctly.
+All use of the button and LEDs has been removed from the code of CANshield as otherwise the display does not function correctly.
 
 ## Outgoing events
 
