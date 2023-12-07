@@ -71,7 +71,7 @@ unsigned char mname[7] = { 'L', 'C', 'D', 'B', 'u', 't', ' ' };
 const byte VER_MAJ = 2;         // code major version
 const char VER_MIN = 'a';       // code minor version
 const byte VER_BETA = 1;        // code beta sub-version
-const byte MODULE_ID = 81;      // CBUS module type for CANshield
+const byte MODULE_ID = 99;      // CBUS module type for CANshield
 
 const unsigned long CAN_OSC_FREQ = 16000000UL;     // Oscillator frequency on the CAN2515 board
 
@@ -339,7 +339,7 @@ void logKeyPressed(int pin,const char* whichKey, bool heldDown) {
     Serial.print("Key ");
     Serial.print(whichKey);
     Serial.println(heldDown ? " Held" : " Pressed");
-    button = pin;
+    button = pin + 1; // Increment to avoid event 0
 }
 
 // Serial IO
@@ -430,7 +430,13 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-//
+  //
+  /// do CBUS message, switch and LED processing
+  //
+
+  CBUS.process();
+
+  //
   /// process console commands
   //
 
@@ -650,6 +656,7 @@ void processSerialInput(void) {
 
     case 'r':
       // renegotiate
+      // Serial << F("> Start renegotiation ") << endl;
       CBUS.renegotiate();
       break;
 
