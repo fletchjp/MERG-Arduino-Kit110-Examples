@@ -2,7 +2,7 @@
 // This example is designed to work with the Arduino CAN shield (MERG Kit 110) with an Arduino UNO.
 // The Kit 110 shield is placed on the Arduino UNO and a second shield placed on top. 
 // https://www.dfrobot.com/product-51.html (DFR0009)
-// This shield has a 2 by 26 character LCD display and a set of buttons.
+// This shield has a 2 by 16 character LCD display and a set of buttons.
 // The code allows for CBUS events to be sent using the buttons.
 // What the button actions do can be configured.
 // Currently the display shows the button actions.
