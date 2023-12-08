@@ -1,10 +1,12 @@
 // CANshield_LCDBut
-// Version of the following code for the CANshield
-// CBUS_LCDBut
-// This is a version of a code with a long name.
-// LCDshieldButtonsSerialDFRobot.ino 
-// LCD shield with buttons example code
-// Adapted to run with CBUS
+// This example is designed to work with the Arduino CAN shield (MERG Kit 110) with an Arduino UNO.
+// The Kit 110 shield is placed on the Arduino UNO and a second shield placed on top. 
+// https://www.dfrobot.com/product-51.html (DFR0009)
+// This shield has a 2 by 26 character LCD display and a set of buttons.
+// The code allows for CBUS events to be sent using the buttons.
+// What the button actions do can be configured.
+// Currently the display shows the button actions.
+// It can be extended to respond to incoming CBUS events.
 //////////////////////////////////////////////////////////////////////////////////
 // NOTE: This code does not support the Button and LEDs for CBUS configuration.
 //       This is because the display uses the same pins.
@@ -37,7 +39,6 @@
 #include <DfRobotInputAbstraction.h>
 #include <TaskManagerIO.h>
 #include <DeviceEvents.h>
-// Note that this header defines LiquidCrystal.h so making sure that LiquidCrystal.h is not read as well.
 #include <LiquidCrystalIO.h> 
 
 /// This uses the default settings for analog ranges.
@@ -61,6 +62,7 @@ IoAbstractionRef dfRobotKeys = inputFromDfRobotShield();
 
 ////////////DEFINE MODULE/////////////////////////////////////////////////
 /// Use these values for the CBUS outputs from the display shield buttons
+/// These values give intial values which are not used elsewhere.
 int button = -1;
 int prevbutton = -1;
 
@@ -71,14 +73,16 @@ unsigned char mname[7] = { 'L', 'C', 'D', 'B', 'u', 't', ' ' };
 const byte VER_MAJ = 2;         // code major version
 const char VER_MIN = 'a';       // code minor version
 const byte VER_BETA = 1;        // code beta sub-version
-const byte MODULE_ID = 99;      // CBUS module type for CANshield
+const byte MODULE_ID = 81;      // CBUS module type for CANshield
 
-const unsigned long CAN_OSC_FREQ = 16000000UL;     // Oscillator frequency on the CAN2515 board
+const unsigned long CAN_OSC_FREQ = 16000000UL;     // Oscillator frequency on the Kit 110 shield
 
 #define NUM_LEDS 0            // How many LEDs are there?
 #define NUM_SWITCHES 0        // How many switchs are there?
-#define NUM_NVS 10            // Moved here so that an array can be made.
 
+
+#define NUM_NVS 10
+// This defines an array to hold the state of each button.
 byte buttonState[NUM_NVS];
 
 //////////////////////////////////////////////////////////////////////////
