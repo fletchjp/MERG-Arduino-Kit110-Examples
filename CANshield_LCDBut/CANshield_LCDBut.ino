@@ -378,7 +378,7 @@ public:
     // when a key is pressed, this is called
     void onPressed(pinid_t pin, bool held) override {
         logKeyPressed(pin,whatKey, held);
-        button = pin;
+        button = pin + 1;
     }
     
     // when a key is released this is called.
