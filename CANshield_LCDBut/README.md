@@ -39,6 +39,10 @@ The example can send CBUS events from the buttons as follows. The numbers are th
  - 5 SELECT
  
   The RST button resets the Arduino.
+  
+## Incoming events
+
+The example can now receive events as well. Details to follow.
 
 ## More information
 
