@@ -542,7 +542,7 @@ void eventhandler(byte index, CANFrame* msg)
   Serial << F("> op_code = ") << opc << endl;
 
   // Experimental code to display a message index on the event_number.
-  if (event_number > nonEvent) {
+  if (event_number >= nonEvent) {
     switch (opc) {
 
       case OPC_ACON:
@@ -556,6 +556,11 @@ void eventhandler(byte index, CANFrame* msg)
         Serial << "Display blank error " << endl;
         drawingEvent.displayError(Error(blankError, 0, 0));
         break;
+      
+      case OPC_ASON1:
+        byte errorNo = msg->data[5];
+        Serial << "Display error " << errorNo << endl;
+        drawingEvent.displayError(Error(errorNo, 0, 0));
     }
   }
 
