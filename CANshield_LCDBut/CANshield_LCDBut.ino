@@ -526,6 +526,8 @@ void loop()
 /// called from the CBUS library when a learned event is received
 /// it receives the event table index and the CAN frame
 //
+// Retain display information
+byte displayNumber = 0;
 
 void eventhandler(byte index, CANFrame* msg)
 {
@@ -547,20 +549,33 @@ void eventhandler(byte index, CANFrame* msg)
 
       case OPC_ACON:
       case OPC_ASON:
-        Serial << "Display error " << event_number - nonEvent << endl;
-        drawingEvent.displayError(Error(event_number - nonEvent, 0, 0));
+        displayNumber = event_number - nonEvent;
+        Serial << "Display error " << displayNumber << endl;
+        drawingEvent.displayError(Error(displayNumber, 0, 0));
         break;
 
       case OPC_ACOF:
       case OPC_ASOF:
         Serial << "Display blank error " << endl;
+        displayNumber = 0;
         drawingEvent.displayError(Error(blankError, 0, 0));
         break;
       
       case OPC_ASON1:
         byte errorNo = msg->data[5];
+        displayNumber = errorNo;
         Serial << "Display error " << errorNo << endl;
         drawingEvent.displayError(Error(errorNo, 0, 0));
+        break;
+      case OPC_AREQ:
+        Serial << "Query (long) received from " << event_number << endl;
+        sendEvent1(OPC_ARON1, event_number, displayNumber); 
+      break;
+      case OPC_ASRQ:
+        Serial << "Query (short) received from " << event_number << endl;
+        //opCode = OPC_ARSON1;
+        sendEvent1(OPC_ARSON1, event_number, displayNumber); 
+      break;
     }
   }
 
@@ -637,6 +652,31 @@ bool sendEvent(byte opCode, unsigned int eventNo)
     Serial << F("> error sending CBUS message with ") << eventNo << endl;
   }
   return success;
+}
+
+/// Send an event routine built to start sending events based with one extra byte
+/// The events can be ACON1 or ACOF1 with 1 byte of data.
+bool sendEvent1(byte opCode, unsigned int eventNo, byte item)
+{
+    CANFrame msg;
+    msg.id = modconfig.CANID;
+    msg.len = 6;
+    msg.data[0] = opCode;
+    msg.data[1] = highByte(modconfig.nodeNum);
+    msg.data[2] = lowByte(modconfig.nodeNum);
+    msg.data[3] = highByte(eventNo); // event number (EN) could be > 255
+    msg.data[4] = lowByte(eventNo); 
+    msg.data[5] = item;    // The extra byte
+    msg.ext = false;
+    msg.rtr = false;
+
+    bool success = CBUS.sendMessage(&msg);
+    if (success) {
+      Serial << F("> sent CBUS event with opCode [ 0x") << _HEX(opCode) << F(" ] and event No ") << eventNo << endl;
+    } else {
+      Serial << F("> error sending CBUS event wit opcode [ 0x") <<  _HEX(opCode) << F(" ]") << endl;
+    }
+    return success;
 }
 
 //
