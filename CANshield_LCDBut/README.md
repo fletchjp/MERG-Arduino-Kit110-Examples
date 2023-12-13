@@ -38,11 +38,20 @@ The example can send CBUS events from the buttons as follows. The numbers are th
  - 4 DOWN
  - 5 SELECT
  
-  The RST button resets the Arduino.
+  The RST button resets the Arduino which restarts the connection to CBUS and refreshes the display.
   
 ## Incoming events
 
-The example can now receive events as well. Details to follow.
+The example can now receive events as well. These events display a message on the top line of the display.
+
+The idea is to simulate a situation where an error message of some sort is being sent from somewhere else on the CBUS system. The error messages are stored in this code and the error message intructs this code what message to display. This is done either with a specific event for each message or else with a message with a number which is an index for the message to display.
+
+Both ON and OFF messages are supported. The OFF message turns off the error message.
+
+NOTE: The CBUS specification supports messages with extra data. They are NOT supported by FCU and the messages have to come from another Arduino code which does support them.
+
+ - 100 ON sends 1 byte of data to choose the message
+ - 101 ON turns on display 1
 
 ## More information
 
