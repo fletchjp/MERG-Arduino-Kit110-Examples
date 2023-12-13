@@ -102,6 +102,10 @@ void eventhandler(byte, CANFrame*);
 void processSerialInput(void);
 void printConfig(void);
 
+void framehandler(CANFrame *msg);
+// Set opcodes for polling events
+byte nopcodes = 8;
+byte opcodes[] = {OPC_AREQ, OPC_ASRQ, OPC_ARON, OPC_AROF, OPC_ARON1, OPC_ASON, OPC_ASOF, OPC_ASON1 }; 
 
 // Index values for errors
 enum errorStates {
@@ -322,8 +326,8 @@ void setupCBUS()
   modconfig.setEEPROMtype(EEPROM_INTERNAL);
   modconfig.begin();
 
-  Serial << F("> mode = ") << ((modconfig.FLiM) ? "FLiM" : "SLiM") << F(", CANID = ") << modconfig.CANID;
-  Serial << F(", NN = ") << modconfig.nodeNum << endl;
+  Serial << "> mode = " << ((modconfig.FLiM) ? "FLiM" : "SLiM") << ", CANID = " << modconfig.CANID;
+  Serial << ", NN = " << modconfig.nodeNum << endl;
 
   // show code version and copyright notice
   printConfig();
@@ -341,13 +345,16 @@ void setupCBUS()
   // register our CBUS event handler, to receive event messages of learned events
   CBUS.setEventHandler(eventhandler);
 
+  // This will only process the defined opcodes.
+  CBUS.setFrameHandler(framehandler, opcodes, nopcodes);
+
   // configure and start CAN bus and CBUS message processing
   CBUS.setNumBuffers(2, 2);               // more buffers = more memory used, fewer = less
   CBUS.setOscFreq(CAN_OSC_FREQ);          // select the crystal frequency of the CAN module
   CBUS.setPins(CAN_CS_PIN, CAN_INT_PIN);  // select pins for CAN bus CE and interrupt connections
 
   if (!CBUS.begin()) {
-    Serial << F("> error starting CBUS") << endl;
+    Serial << "> error starting CBUS" << endl;
   }
 }
 
@@ -465,7 +472,7 @@ void setup()
   setupSwitches();
 
   // Schedule tasks to run every 250 milliseconds.
-  taskManager.scheduleFixedRate(250, processSerialInput);
+  //taskManager.scheduleFixedRate(250, processSerialInput);
   taskManager.scheduleFixedRate(250, processButtons);
 
   // create any other tasks that you need here for your sketch
@@ -535,13 +542,13 @@ void eventhandler(byte index, CANFrame* msg)
   // as an example, display the opcode and the first EV of this event
   byte opc = msg->data[0];
 
-  Serial << F("> event handler: index = ") << index << F(", opcode = 0x") << _HEX(opc) << endl;
-  Serial << F("> EV1 = ") << modconfig.getEventEVval(index, 1) << endl;
+  //Serial << "> event handler: index = " << index << ", opcode = 0x" << _HEX(opc) << endl;
+  //Serial << "> EV1 = " << modconfig.getEventEVval(index, 1) << endl;
 
   unsigned int node_number = (msg->data[1] << 8) + msg->data[2];
   unsigned int event_number = (msg->data[3] << 8) + msg->data[4];
-  Serial << F("> NN = ") << node_number << F(", EN = ") << event_number << endl;
-  Serial << F("> op_code = ") << opc << endl;
+  //Serial << "> NN = " << node_number << ", EN = " << event_number << endl;
+  //Serial << "> op_code = " << opc << endl;
 
   // Experimental code to display a message index on the event_number.
   if (event_number >= nonEvent) {
@@ -550,13 +557,13 @@ void eventhandler(byte index, CANFrame* msg)
       case OPC_ACON:
       case OPC_ASON:
         displayNumber = event_number - nonEvent;
-        Serial << "Display error " << displayNumber << endl;
+        Serial << F("Display error ") << displayNumber << endl;
         drawingEvent.displayError(Error(displayNumber, 0, 0));
         break;
 
       case OPC_ACOF:
       case OPC_ASOF:
-        Serial << "Display blank error " << endl;
+        Serial << F("Display blank error ") << endl;
         displayNumber = 0;
         drawingEvent.displayError(Error(blankError, 0, 0));
         break;
@@ -564,23 +571,49 @@ void eventhandler(byte index, CANFrame* msg)
       case OPC_ASON1:
         byte errorNo = msg->data[5];
         displayNumber = errorNo;
-        Serial << "Display error " << errorNo << endl;
+        Serial << F("Display error ") << errorNo << endl;
         drawingEvent.displayError(Error(errorNo, 0, 0));
         break;
-      case OPC_AREQ:
-        Serial << "Query (long) received from " << event_number << endl;
-        sendEvent1(OPC_ARON1, event_number, displayNumber); 
-      break;
-      case OPC_ASRQ:
-        Serial << "Query (short) received from " << event_number << endl;
-        //opCode = OPC_ARSON1;
-        sendEvent1(OPC_ARSON1, event_number, displayNumber); 
-      break;
     }
   }
 
   return;
 }
+
+void framehandler(CANFrame *msg) {
+
+  byte opc = msg->data[0];
+  
+  // as an example, format and display the received frame
+
+  //Serial << "[ " << (msg->id & 0x7f) << "] [" << msg->len << "] [";
+
+  //for (byte d = 0; d < msg->len; d++) {
+  //  Serial << " 0x" << _HEX(msg->data[d]);
+  //}
+
+  //Serial << " ]" << endl;
+  unsigned int node_number = (msg->data[1] << 8) + msg->data[2];
+  unsigned int event_number = (msg->data[3] << 8) + msg->data[4];
+  Serial << F("> NN = ") << node_number << F(", EN = ") << event_number << endl;
+  Serial << F("> op_code = 0x") << _HEX(opc) << endl;
+  if (event_number >= nonEvent) {
+    switch (opc) {
+      case OPC_AREQ:
+        Serial << F("Query (long) received from ") << event_number << F(", reply sent with display no ") << displayNumber<< endl;
+        delay(10);
+        sendEvent1(OPC_ARON1, event_number, displayNumber); 
+      break;
+      case OPC_ASRQ:
+        Serial << F("Query (short) received from ") << event_number << F(", reply sent with display no ") << displayNumber << endl;
+        //opCode = OPC_ARSON1;
+        delay(10);
+        sendEvent1(OPC_ARSON1, event_number, displayNumber); 
+      break;
+    }
+  }
+}
+
 //
 /// print code version config details and copyright notice
 //
