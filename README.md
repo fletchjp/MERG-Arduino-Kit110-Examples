@@ -5,5 +5,9 @@
  
  This is an example of the use of a CANshield with a DFRobot shield with a 2 by 16 LCD display and a set of buttons.
  
+ This example shows how it is possible to send and receive events which are integrated with the buttons and the display.
+ 
+ It is also possible to receive a query and reply giving the state of the display.
+ 
  Further information will be found in a README file included with the example.
 
