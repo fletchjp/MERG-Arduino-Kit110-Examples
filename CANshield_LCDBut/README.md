@@ -30,7 +30,7 @@ All use of the button and LEDs has been removed from the code of CANshield as ot
 
 ## Outgoing events
 
-The example can send CBUS events from the buttons as follows. The numbers are the CBUS event numbers. These can be taught using FCU.
+The example can send CBUS events from the buttons as follows. The numbers are the CBUS event numbers. These can be taught using FCU to any module which is to use the information.
 
  - 1 RIGHT
  - 2 LEFT
@@ -49,6 +49,8 @@ The idea is to simulate a situation where an error message of some sort is being
 Both ON and OFF messages are supported. The OFF message turns off the error message.
 
 NOTE: The CBUS specification supports messages with extra data. They are NOT supported by FCU and the messages have to come from another Arduino code which does support them.
+
+Event numbers supported as both long and short events. The events need to be taught to the module in the usual way for CBUS.
 
  - 100 ON sends 1 byte of data to choose the message
  - 101 ON turns on display 1
