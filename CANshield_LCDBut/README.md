@@ -54,7 +54,17 @@ Event numbers supported as both long and short events. The events need to be tau
 
  - 100 ON sends 1 byte of data to choose the message
  - 101 ON turns on display 1
+ 
+## Query and response
 
+The CBUS specification supports messages between modules which allow for the sending of a query message to which a module can reply. They are NOT supported by FCU and the messages have to come from another Arduino code which does support them.
+
+Also they cannot be taught as events and handling has to be included in the code. This is done using a framehandler code which can be set up to process only particular events and codes.
+
+The example query supports the situation where a module on the system needs information on what error is being displayed.
+
+ - 100 A query to event number 100 can be sent from another module. This module replies with a response which includes the number of the error message being displayed.
+ 
 ## More information
 
 An Arduino program using the Arduino CAN Shield (MERG Kit Locker #110).
