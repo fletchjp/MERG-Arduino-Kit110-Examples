@@ -56,7 +56,6 @@ IoAbstractionRef dfRobotKeys = inputFromDfRobotShield();
 #include <CBUS2515.h>    // CAN controller and CBUS class
 #include <CBUSconfig.h>  // module configuration
 //#include <CBUSLED.h>             // CBUS LEDs
-#include <CBUSconfig.h>  // module configuration
 #include <cbusdefs.h>    // MERG CBUS constants
 #include <CBUSParams.h>  // CBUS parameters
 
