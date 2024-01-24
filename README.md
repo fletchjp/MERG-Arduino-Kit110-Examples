@@ -11,3 +11,7 @@
  
  Further information will be found in a README file included with the example.
 
+## CANshield_LCDBut_1280
+
+This is a version of the same code adapted to run on a MEGA 1280 which has a larger memory than a UNO with therefore more scope for development.
+
