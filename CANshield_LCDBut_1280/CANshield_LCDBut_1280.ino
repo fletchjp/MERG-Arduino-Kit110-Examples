@@ -494,7 +494,14 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-//
+
+  //
+  /// do CBUS message, switch and LED processing
+  //
+
+  CBUS.process();
+
+  //
   /// process console commands
   //
 
