@@ -77,6 +77,7 @@ IoAbstractionRef dfRobotKeys = inputFromDfRobotShield();
 
 ////////////DEFINE MODULE/////////////////////////////////////////////////
 /// Use these values for the CBUS outputs from the display shield buttons
+/// These values give intial values which are not used elsewhere.
 int button = -1;
 int prevbutton = -1;
 
@@ -317,7 +318,7 @@ void serialPrintErrorln(int i)
  getErrorMessage(i);Serial.println(error_buffer);
 }
 
-
+/////////////////////////////////////////////////////////////////////
 //
 /// setup CBUS - runs once at power on from setup()
 //
