@@ -1,10 +1,10 @@
 <img align="right" src="arduino_cbus_logo.png"  width="150" height="75">
 
-# CANshield_LCDBut
+# CANshield_LCDBut_1280
 
 This is an example of an application of the Arduino CAN Shield (MERG Kit Locker #110).
 
-The example code runs on an Arduino UNO with a CAN shield and a DFRobot shield with a 2 by 16 LCD display and buttons.
+The example code runs on an Arduino MEGA 1280 with a CAN shield and a DFRobot shield with a 2 by 16 LCD display and buttons.
 
 This examples is fairly complex code as it has to support both the reading of the input buttons and the send information to the LCD display. 
 
