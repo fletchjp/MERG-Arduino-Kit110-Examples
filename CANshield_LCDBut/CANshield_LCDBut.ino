@@ -12,6 +12,8 @@
 //       This is because the display uses the same pins.
 //       In any case, the button and LEDs are hidden behind the display shield.
 ///////////////////////////////////////////////////////////////////////////////////
+// NOTE ALSO: This code is very close to the limit of what can be compiled for an Arduino UNO.
+///////////////////////////////////////////////////////////////////////////////////
 // Pin Use map UNO:
 // Digital pin 2          Interupt CAN
 // Digital pin 3 (PWM)    Not used
