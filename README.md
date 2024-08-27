@@ -15,3 +15,6 @@
 
 This is a version of the same code adapted to run on a MEGA 1280 which has a larger memory than a UNO with therefore more scope for development.
 
+## CANshield_LCDBut_1280_PJON
+
+This has extra code for data transfer using PJON. In this example it can display temoerature and humidity data from another Arduino.
